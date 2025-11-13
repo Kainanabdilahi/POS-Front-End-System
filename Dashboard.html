@@ -354,7 +354,8 @@
         const paginated = filteredOrders.slice(start, end);
 
         paginated.forEach((o) => {
-          const color = o.status === "Paid" ? "text-emerald-500" : "text-amber-500";
+          const color =
+            o.status === "Paid" ? "text-emerald-500" : "text-amber-500";
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td class="px-4 py-2 font-mono">${o.id}</td>
@@ -367,7 +368,9 @@
         });
 
         paginationInfo.textContent = filteredOrders.length
-          ? `Showing ${start + 1}-${Math.min(end, filteredOrders.length)} of ${filteredOrders.length}`
+          ? `Showing ${start + 1}-${Math.min(end, filteredOrders.length)} of ${
+              filteredOrders.length
+            }`
           : "No results";
 
         prevPage.disabled = currentPage === 1;
