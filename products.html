@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POS System – Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      .img-thumb {
+        width: 52px;
+        height: 52px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+      }
+    </style>
+  </head>
+  <body
+    class="h-full bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100"
+  >
+    <div class="min-h-screen flex">
+      <!-- Sidebar -->
+      <aside
+        id="sidebar"
+        class="fixed lg:static inset-y-0 left-0 w-64 z-30 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 p-4 flex flex-col space-y-4 transition-transform"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div
+              class="h-9 w-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500"
+            ></div>
+            <div>
+              <h1
+                class="font-semibold text-lg leading-tight text-slate-800 dark:text-white"
+              >
+                POS System
+              </h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Products</p>
+            </div>
+          </div>
+          <button
+            id="closeSidebar"
+            class="lg:hidden px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200"
+          >
+            ✕
+          </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto space-y-1">
+          <a
+            href="dashboard.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🏠 Dashboard</a
+          >
+          <a
+            href="customers.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >👥 Customers</a
+          >
+          <a
+            href="category.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🏷️ Category</a
+          >
+          <a
+            href="suppliers.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🚚 Suppliers</a
+          >
+          <a
+            href="products.html"
+            class="block px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-200"
+            >📦 Products</a
+          >
+          <a
+            href="orders.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🧾 Orders</a
+          >
+          <a
+            href="reports.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >📈 Reports</a
+          >
+          <a
+            href="users.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🛂 Users</a
+          >
+        </nav>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex-1 flex flex-col min-h-screen">
+        <!-- Navbar -->
+        <header
+          class="sticky top-0 bg-white/80 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700 backdrop-blur z-20"
+        >
+          <div
+            class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between"
+          >
+            <div class="flex items-center gap-3">
+              <button
+                id="openSidebar"
+                class="lg:hidden px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200"
+              >
+                ☰
+              </button>
+              <h2 class="font-semibold text-lg text-slate-800 dark:text-white">
+                Products
+              </h2>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div
+                id="clock"
+                class="text-xs text-slate-500 dark:text-slate-400"
+              ></div>
+
+              <!-- Dark / Light Toggle -->
+              <button
+                id="themeToggle"
+                class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                title="Toggle Dark/Light Mode"
+              >
+                <span id="themeIcon">🌙</span>
+              </button>
+
+              <!-- Logout -->
+              <a
+                href="index.html"
+                id="logoutBtn"
+                class="px-3 py-2 rounded-xl border border-rose-300 dark:border-rose-700 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition font-medium"
+              >
+                Logout
+              </a>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+          <div class="flex items-center justify-between gap-2 mb-4 flex-wrap">
+            <div class="flex items-center gap-2 flex-wrap">
+              <input
+                id="searchProduct"
+                type="text"
+                placeholder="Search name or category..."
+                class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-300 px-3 py-2 min-w-[220px]"
+              />
+              <select
+                id="filterCategory"
+                class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2 min-w-[160px]"
+              >
+                <option value="all">All categories</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                id="exportBtn"
+                class="rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-100 px-4 py-2 text-sm"
+              >
+                Export JSON
+              </button>
+              <label
+                class="rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-100 px-4 py-2 text-sm cursor-pointer"
+              >
+                Import JSON
+                <input
+                  id="importFile"
+                  type="file"
+                  accept="application/json"
+                  class="hidden"
+                />
+              </label>
+              <button
+                id="addProductBtn"
+                class="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm"
+              >
+                + Add Product
+              </button>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div
+            class="overflow-x-auto rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+          >
+            <table class="min-w-full text-sm">
+              <thead
+                class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700"
+              >
+                <tr>
+                  <th class="px-4 py-2 text-left">Image</th>
+                  <th class="px-4 py-2 text-left">ID</th>
+                  <th class="px-4 py-2 text-left">Name</th>
+                  <th class="px-4 py-2 text-left">Category</th>
+                  <th class="px-4 py-2 text-left">Price</th>
+                  <th class="px-4 py-2 text-left">Qty</th>
+                  <th class="px-4 py-2 text-left hidden md:table-cell">Date</th>
+                  <th class="px-4 py-2 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody
+                id="productBody"
+                class="divide-y divide-slate-200 dark:divide-slate-700"
+              ></tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div
+            class="flex items-center justify-between text-sm mt-3 text-slate-600 dark:text-slate-300"
+          >
+            <div>
+              Showing <span id="from">0</span>–<span id="to">0</span> of
+              <span id="total">0</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                id="prev"
+                class="rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 disabled:opacity-40"
+              >
+                Prev
+              </button>
+              <button
+                id="next"
+                class="rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </main>
+
+        <footer
+          class="text-xs text-slate-500 dark:text-slate-400 text-center py-4"
+        >
+          Step 6 of 8 – Products • Next: Orders (with PDF)
+        </footer>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <dialog
+      id="productModal"
+      class="backdrop:bg-black/50 rounded-3xl p-0 w-full max-w-2xl"
+    >
+      <form
+        id="productForm"
+        method="dialog"
+        class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden"
+      >
+        <div
+          class="px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between"
+        >
+          <h3
+            id="modalTitle"
+            class="font-semibold text-slate-800 dark:text-white"
+          >
+            Add Product
+          </h3>
+          <button
+            type="button"
+            id="closeModal"
+            class="rounded-lg px-2 py-1 text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div
+          class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-800 dark:text-slate-100"
+        >
+          <input type="hidden" id="prodId" />
+          <div class="md:col-span-2">
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Name</label
+            >
+            <input
+              id="prodName"
+              required
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Category</label
+            >
+            <select
+              id="prodCategory"
+              required
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2"
+            ></select>
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Price</label
+            >
+            <input
+              id="prodPrice"
+              type="number"
+              step="0.01"
+              min="0"
+              required
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Quantity</label
+            >
+            <input
+              id="prodQty"
+              type="number"
+              step="1"
+              min="0"
+              required
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2"
+            />
+          </div>
+          <div class="md:col-span-2">
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Description</label
+            >
+            <textarea
+              id="prodDesc"
+              rows="3"
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-300 px-3 py-2"
+              placeholder="Optional"
+            ></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Image</label
+            >
+            <input
+              id="prodImage"
+              type="file"
+              accept="image/*"
+              class="block w-full text-sm text-slate-500 dark:text-slate-300 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 dark:file:bg-indigo-900/30 file:px-3 file:py-2 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800/40"
+            />
+            <div id="imgPreview" class="mt-2 hidden">
+              <img
+                id="imgTag"
+                alt="Preview"
+                class="img-thumb border border-slate-200 dark:border-slate-700"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="px-5 py-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-end gap-2"
+        >
+          <button
+            type="button"
+            id="cancelProd"
+            class="rounded-xl border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 px-4 py-2"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <script>
+      const $ = (s, c = document) => c.querySelector(s);
+      const money = (n) => "$" + Number(n || 0).toFixed(2);
+      const fmtDate = (d) => new Date(d).toLocaleDateString();
+
+      // Theme
+      function applyTheme() {
+        const dark = localStorage.getItem("pos_theme") === "dark";
+        document.documentElement.classList.toggle("dark", dark);
+        $("#themeIcon").textContent = dark ? "☀️" : "🌙";
+      }
+      applyTheme();
+      $("#themeToggle").onclick = () => {
+        const t =
+          localStorage.getItem("pos_theme") === "dark" ? "light" : "dark";
+        localStorage.setItem("pos_theme", t);
+        applyTheme();
+      };
+
+      // Sidebar + Clock
+      $("#openSidebar").onclick = () =>
+        $("#sidebar").classList.remove("hidden");
+      $("#closeSidebar").onclick = () => $("#sidebar").classList.add("hidden");
+      setInterval(
+        () => ($("#clock").textContent = new Date().toLocaleTimeString()),
+        1000
+      );
+
+      // Data
+      const KEY_PRODUCTS = "pos_products_v1";
+      const KEY_CATEGORIES = "pos_categories_v1";
+      let products = JSON.parse(localStorage.getItem(KEY_PRODUCTS) || "[]");
+      let categories = JSON.parse(localStorage.getItem(KEY_CATEGORIES) || "[]");
+
+      const state = { q: "", cat: "all", page: 1, size: 5 };
+
+      function buildCategorySelects() {
+        const filterSel = $("#filterCategory");
+        const formSel = $("#prodCategory");
+        const names = categories.map((c) => c.name);
+        filterSel.innerHTML =
+          `<option value='all'>All categories</option>` +
+          names.map((n) => `<option value='${n}'>${n}</option>`).join("");
+        formSel.innerHTML = names.length
+          ? names.map((n) => `<option value='${n}'>${n}</option>`).join("")
+          : `<option value='' disabled selected>No categories</option>`;
+      }
+      buildCategorySelects();
+
+      // Image Preview
+      let currentImgData = "";
+      $("#prodImage").addEventListener("change", (e) => {
+        const file = e.target.files?.[0];
+        const prev = $("#imgPreview"),
+          tag = $("#imgTag");
+        if (!file) {
+          prev.classList.add("hidden");
+          currentImgData = "";
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          currentImgData = reader.result;
+          tag.src = currentImgData;
+          prev.classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // Render Table
+      function renderTable() {
+        let data = [...products];
+        if (state.q) {
+          const q = state.q;
+          data = data.filter(
+            (p) =>
+              p.name.toLowerCase().includes(q) ||
+              p.category.toLowerCase().includes(q)
+          );
+        }
+        if (state.cat !== "all")
+          data = data.filter((p) => p.category === state.cat);
+        const total = data.length;
+        const pages = Math.max(1, Math.ceil(total / state.size));
+        state.page = Math.min(state.page, pages);
+        const start = (state.page - 1) * state.size;
+        const end = Math.min(start + state.size, total);
+        const pageRows = data.slice(start, end);
+
+        $("#from").textContent = total ? start + 1 : 0;
+        $("#to").textContent = end;
+        $("#total").textContent = total;
+        $("#prev").disabled = state.page <= 1;
+        $("#next").disabled = state.page >= pages;
+
+        const tbody = $("#productBody");
+        tbody.innerHTML = "";
+        pageRows.forEach((p) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class='px-4 py-2'>${
+              p.image
+                ? `<img src='${p.image}' class='img-thumb border border-slate-200 dark:border-slate-700'>`
+                : "—"
+            }</td>
+            <td class='px-4 py-2 font-mono'>${p.id}</td>
+            <td class='px-4 py-2'>${p.name}</td>
+            <td class='px-4 py-2'>${p.category}</td>
+            <td class='px-4 py-2'>${money(p.price)}</td>
+            <td class='px-4 py-2'>${p.quantity}</td>
+            <td class='px-4 py-2 hidden md:table-cell'>${fmtDate(p.date)}</td>
+            <td class='px-4 py-2 text-center'>
+              <button class='text-indigo-600 hover:underline text-sm' onclick='editProduct("${p.id}")'>Edit</button>
+              <button class='text-rose-600 hover:underline text-sm ml-2' onclick='delProduct("${p.id}")'>Delete</button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      }
+
+      $("#searchProduct").oninput = (e) => {
+        state.q = e.target.value.toLowerCase();
+        state.page = 1;
+        renderTable();
+      };
+      $("#filterCategory").onchange = (e) => {
+        state.cat = e.target.value;
+        state.page = 1;
+        renderTable();
+      };
+      $("#prev").onclick = () => {
+        if (state.page > 1) {
+          state.page--;
+          renderTable();
+        }
+      };
+      $("#next").onclick = () => {
+        state.page++;
+        renderTable();
+      };
+
+      // Modal
+      const modal = $("#productModal");
+      $("#addProductBtn").onclick = () => openModal();
+      $("#closeModal").onclick = () => modal.close();
+      $("#cancelProd").onclick = () => modal.close();
+
+      function openModal(edit = null) {
+        $("#modalTitle").textContent = edit ? "Edit Product" : "Add Product";
+        $("#productForm").reset();
+        $("#prodId").value = edit?.id || "";
+        $("#prodName").value = edit?.name || "";
+        $("#prodCategory").value =
+          edit?.category || $("#prodCategory").options[0]?.value || "";
+        $("#prodPrice").value = edit?.price ?? "";
+        $("#prodQty").value = edit?.quantity ?? "";
+        $("#prodDesc").value = edit?.desc || "";
+        currentImgData = edit?.image || "";
+        const prev = $("#imgPreview"),
+          tag = $("#imgTag");
+        if (currentImgData) {
+          tag.src = currentImgData;
+          prev.classList.remove("hidden");
+        } else {
+          prev.classList.add("hidden");
+        }
+        modal.showModal();
+      }
+
+      $("#productForm").onsubmit = (e) => {
+        e.preventDefault();
+        const id = $("#prodId").value || "P-" + String(Date.now()).slice(-5);
+        const obj = {
+          id,
+          name: $("#prodName").value.trim(),
+          category: $("#prodCategory").value,
+          image: currentImgData || "",
+          desc: $("#prodDesc").value.trim(),
+          price: Number($("#prodPrice").value || 0),
+          quantity: parseInt($("#prodQty").value || "0", 10),
+          date: new Date().toISOString(),
+        };
+        if (!obj.name || !obj.category)
+          return Swal.fire({ icon: "warning", title: "Missing fields" });
+        const i = products.findIndex((p) => p.id === id);
+        if (i >= 0) products[i] = obj;
+        else products.unshift(obj);
+        localStorage.setItem(KEY_PRODUCTS, JSON.stringify(products));
+        modal.close();
+        Swal.fire({
+          icon: "success",
+          title: "Saved!",
+          timer: 1200,
+          showConfirmButton: false,
+        });
+        renderTable();
+      };
+
+      function delProduct(id) {
+        Swal.fire({
+          title: "Delete this product?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#e11d48",
+          confirmButtonText: "Yes, delete",
+        }).then((r) => {
+          if (r.isConfirmed) {
+            products = products.filter((p) => p.id !== id);
+            localStorage.setItem(KEY_PRODUCTS, JSON.stringify(products));
+            renderTable();
+            Swal.fire({
+              icon: "success",
+              title: "Deleted",
+              timer: 1000,
+              showConfirmButton: false,
+            });
+          }
+        });
+      }
+      window.delProduct = delProduct;
+      window.editProduct = (id) => openModal(products.find((x) => x.id === id));
+
+      $("#exportBtn").onclick = () => {
+        const blob = new Blob([JSON.stringify(products, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "products.json";
+        a.click();
+      };
+
+      $("#importFile").addEventListener("change", (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const data = JSON.parse(reader.result);
+            if (Array.isArray(data)) {
+              products = data;
+              localStorage.setItem(KEY_PRODUCTS, JSON.stringify(products));
+              renderTable();
+              Swal.fire({
+                icon: "success",
+                title: "Imported!",
+                timer: 1200,
+                showConfirmButton: false,
+              });
+            } else Swal.fire({ icon: "error", title: "Invalid JSON" });
+          } catch {
+            Swal.fire({ icon: "error", title: "Failed to parse file" });
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = "";
+      });
+
+      renderTable();
+    </script>
+  </body>
+</html>

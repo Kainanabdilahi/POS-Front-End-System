@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POS System – Orders</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" };
+    </script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- jsPDF + AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+      input::placeholder,
+      textarea::placeholder {
+        color: rgb(148 163 184);
+      }
+      .dark input::placeholder,
+      .dark textarea::placeholder {
+        color: rgb(226 232 240);
+      }
+      .card {
+        border: 1px solid rgb(226 232 240);
+      }
+      .dark .card {
+        border-color: rgb(51 65 85);
+      }
+    </style>
+  </head>
+
+  <body class="h-full bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100">
+    <div class="min-h-screen flex">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 w-64 z-30 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 p-4 flex flex-col space-y-4 transition-transform">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="h-9 w-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500"></div>
+            <div>
+              <h1 class="font-semibold text-lg leading-tight">POS System</h1>
+              <p class="text-xs text-slate-500">Orders</p>
+            </div>
+          </div>
+          <button id="closeSidebar" class="lg:hidden px-2 py-1 rounded-lg border">✕</button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto space-y-1">
+          <a href="dashboard.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🏠 Dashboard</a>
+          <a href="customers.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">👥 Customers</a>
+          <a href="category.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🏷️ Category</a>
+          <a href="suppliers.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🚚 Suppliers</a>
+          <a href="products.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">📦 Products</a>
+          <a href="orders.html" class="block px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-200">🧾 Orders</a>
+          <a href="reports.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">📈 Reports</a>
+          <a href="users.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🛂 Users</a>
+        </nav>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex-1 flex flex-col min-h-screen">
+        <!-- Navbar -->
+        <header class="sticky top-0 bg-white/80 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700 backdrop-blur z-20">
+          <div class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <button id="openSidebar" class="lg:hidden px-3 py-2 border rounded-lg">☰</button>
+              <h2 class="font-semibold text-lg">Orders</h2>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div id="clock" class="text-xs text-slate-500 dark:text-slate-300"></div>
+
+              <button
+                id="themeToggle"
+                class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                title="Toggle Dark/Light Mode"
+              >
+                <span id="themeIcon">🌙</span>
+              </button>
+
+              <a
+                href="index.html"
+                id="logoutBtn"
+                class="px-3 py-2 rounded-xl border border-rose-300 dark:border-rose-700 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition font-medium"
+              >
+                Logout
+              </a>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main content -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6">
+          <!-- Create Order -->
+          <section class="rounded-3xl card bg-white dark:bg-slate-800 p-4 sm:p-5">
+            <h3 class="font-semibold mb-4 text-slate-800 dark:text-white">
+              Create New Order
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Customer</label>
+                <select id="selCustomer" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-800 dark:text-white"></select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Discount (%)</label>
+                <input id="inpDiscount" type="number" min="0" max="100" value="0" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-800 dark:text-white" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Tax (%)</label>
+                <input id="inpTax" type="number" min="0" value="5" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-800 dark:text-white" />
+              </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div class="lg:col-span-2">
+                <div class="flex items-center justify-between mb-3">
+                  <h4 class="font-medium text-slate-800 dark:text-white">Products</h4>
+                  <input id="searchProd" placeholder="Search products..." class="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 bg-white dark:bg-slate-900 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-200" />
+                </div>
+                <div id="prodGrid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3"></div>
+                <div id="noProd" class="hidden text-sm text-slate-500 dark:text-slate-300 mt-2">No products.</div>
+              </div>
+
+              <aside class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-medium text-slate-800 dark:text-white">Cart</h4>
+                  <button id="btnClearCart" class="text-rose-600 text-sm border border-rose-200 dark:border-rose-700 rounded-lg px-2 py-1 hover:bg-rose-50 dark:hover:bg-rose-900/20">Clear</button>
+                </div>
+                <div id="cartList" class="space-y-2 max-h-[40vh] overflow-auto"></div>
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-3 space-y-1 text-sm">
+                  <div class="flex items-center justify-between"><span>Subtotal</span><span id="subTotal">$0.00</span></div>
+                  <div class="flex items-center justify-between"><span>Discount</span><span id="discTotal">-$0.00</span></div>
+                  <div class="flex items-center justify-between"><span>Tax</span><span id="taxTotal">$0.00</span></div>
+                  <div class="flex items-center justify-between font-semibold text-slate-800 dark:text-white"><span>Total</span><span id="grandTotal">$0.00</span></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-sm mb-1">Payment</label>
+                    <select id="paymentMethod" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-800 dark:text-white">
+                      <option value="Cash">Cash</option>
+                      <option value="Card">Card</option>
+                      <option value="Mobile">Mobile</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm mb-1">Amount Paid</label>
+                    <input id="amountPaid" type="number" step="0.01" min="0" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-800 dark:text-white" />
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                  <span>Change</span><span id="changeDue">$0.00</span>
+                </div>
+                <button id="btnSaveOrder" class="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">Save & PDF</button>
+              </aside>
+            </div>
+          </section>
+
+          <!-- Orders List -->
+          <section class="rounded-3xl card bg-white dark:bg-slate-800 p-4 sm:p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-semibold text-slate-800 dark:text-white">Orders List</h3>
+              <input id="searchOrders" placeholder="Search by ID or customer..." class="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 bg-white dark:bg-slate-900 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-200" />
+            </div>
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                  <tr>
+                    <th class="px-4 py-2 text-left">Order ID</th>
+                    <th class="px-4 py-2 text-left">Customer</th>
+                    <th class="px-4 py-2 text-left">Items</th>
+                    <th class="px-4 py-2 text-left">Total</th>
+                    <th class="px-4 py-2 text-left hidden md:table-cell">Date</th>
+                    <th class="px-4 py-2 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersBody" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
+              </table>
+            </div>
+            <div class="flex items-center justify-between text-sm mt-3">
+              <div>Showing <span id="from">0</span>–<span id="to">0</span> of <span id="total">0</span></div>
+              <div class="flex items-center gap-2">
+                <button id="prev" class="rounded-lg border px-3 py-1.5 disabled:opacity-40">Prev</button>
+                <button id="next" class="rounded-lg border px-3 py-1.5 disabled:opacity-40">Next</button>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <footer class="text-xs text-slate-500 text-center py-4">
+          Step 7 of 8 – Orders
+        </footer>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      // ===== Helper Functions =====
+      const $ = (s, c = document) => c.querySelector(s);
+      const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+      const money = (n) => "$" + Number(n || 0).toFixed(2);
+      const fmtDate = (d) => new Date(d).toLocaleString();
+
+      // Theme
+      function applyTheme() {
+        const dark = localStorage.getItem("pos_theme") === "dark";
+        document.documentElement.classList.toggle("dark", dark);
+        $("#themeIcon").textContent = dark ? "☀️" : "🌙";
+      }
+      applyTheme();
+      $("#themeToggle").onclick = () => {
+        const t = localStorage.getItem("pos_theme") === "dark" ? "light" : "dark";
+        localStorage.setItem("pos_theme", t);
+        applyTheme();
+      };
+
+      // Sidebar + clock
+      $("#openSidebar").onclick = () => $("#sidebar").classList.remove("hidden");
+      $("#closeSidebar").onclick = () => $("#sidebar").classList.add("hidden");
+      setInterval(() => ($("#clock").textContent = new Date().toLocaleTimeString()), 1000);
+
+      // ===== Storage =====
+      const KEY_PRODUCTS = "pos_products_v1";
+      const KEY_CUSTOMERS = "pos_customers_v1";
+      const KEY_ORDERS = "pos_orders_v1";
+
+      let products = JSON.parse(localStorage.getItem(KEY_PRODUCTS) || "[]");
+      let customers = JSON.parse(localStorage.getItem(KEY_CUSTOMERS) || "[]");
+      let orders = JSON.parse(localStorage.getItem(KEY_ORDERS) || "[]");
+      const saveOrders = () => localStorage.setItem(KEY_ORDERS, JSON.stringify(orders));
+
+      // ===== Populate customers =====
+      function buildCustomerSelect() {
+        const sel = $("#selCustomer");
+        sel.innerHTML = customers.length ? "" : "<option disabled selected>No customers</option>";
+        customers.forEach((c) => {
+          const o = document.createElement("option");
+          o.value = c.id;
+          o.textContent = c.name;
+          sel.appendChild(o);
+        });
+      }
+      buildCustomerSelect();
+
+      // ===== Cart + Products =====
+      let cart = [];
+      let editingOrderId = null;
+
+      function renderProducts() {
+        const q = $("#searchProd").value.trim().toLowerCase();
+        const list = products.filter(
+          (p) => p.name.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q)
+        );
+        const grid = $("#prodGrid");
+        grid.innerHTML = "";
+        $("#noProd").classList.toggle("hidden", list.length > 0);
+        list.forEach((p) => {
+          const card = document.createElement("div");
+          card.className =
+            "rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 shadow-sm";
+          card.innerHTML = `
+            <div class="aspect-video w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 mb-2">
+              ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover">` : ""}
+            </div>
+            <div class="font-medium text-slate-800 dark:text-white">${p.name}</div>
+            <div class="text-xs text-slate-500">${p.category || "—"}</div>
+            <div class="mt-1 text-sm">${money(p.price)} · Qty: ${p.quantity ?? 0}</div>
+            <button class="mt-2 w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 text-sm" data-add="${p.id}">Add</button>`;
+          grid.appendChild(card);
+        });
+        $$("[data-add]").forEach((b) =>
+          b.addEventListener("click", () => {
+            const id = b.getAttribute("data-add");
+            const p = products.find((x) => x.id === id);
+            if (!p) return;
+            const found = cart.find((i) => i.id === id);
+            if (found) found.qty += 1;
+            else cart.push({ id: p.id, name: p.name, price: Number(p.price || 0), qty: 1 });
+            renderCart();
+          })
+        );
+      }
+      $("#searchProd").oninput = renderProducts;
+      renderProducts();
+
+      function calcTotals() {
+        const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
+        const discPct = Number($("#inpDiscount").value || 0);
+        const taxPct = Number($("#inpTax").value || 0);
+        const discVal = sub * (discPct / 100);
+        const taxed = Math.max(0, sub - discVal);
+        const taxVal = taxed * (taxPct / 100);
+        const total = taxed + taxVal;
+        return { sub, discVal, taxVal, total };
+      }
+
+      function renderCart() {
+        const list = $("#cartList");
+        list.innerHTML = "";
+        cart.forEach((i) => {
+          const row = document.createElement("div");
+          row.className =
+            "flex items-center justify-between gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2";
+          row.innerHTML = `
+          <div class="min-w-0">
+            <div class="font-medium text-slate-800 dark:text-white truncate">${i.name}</div>
+            <div class="text-xs text-slate-500">${money(i.price)}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="rounded-lg border px-2 py-1" data-dec="${i.id}">−</button>
+            <input class="w-12 text-center rounded-lg border bg-white dark:bg-slate-900" value="${i.qty}" data-qty="${i.id}">
+            <button class="rounded-lg border px-2 py-1" data-inc="${i.id}">+</button>
+          </div>
+          <div class="w-20 text-right text-sm">${money(i.price * i.qty)}</div>
+          <button class="rounded-lg border border-rose-200 text-rose-600 px-2 py-1" title="Remove" data-del="${i.id}">✕</button>`;
+          list.appendChild(row);
+        });
+
+        $$("[data-inc]").forEach((b) => (b.onclick = () => { const it = cart.find((x) => x.id === b.dataset.inc); it.qty++; renderCart(); }));
+        $$("[data-dec]").forEach((b) => (b.onclick = () => { const it = cart.find((x) => x.id === b.dataset.dec); it.qty = Math.max(1, it.qty - 1); renderCart(); }));
+        $$("[data-del]").forEach((b) => (b.onclick = () => { cart = cart.filter((x) => x.id !== b.dataset.del); renderCart(); }));
+        $$("[data-qty]").forEach((inp) => (inp.onchange = () => { const it = cart.find((x) => x.id === inp.dataset.qty); it.qty = Math.max(1, parseInt(inp.value || "1", 10)); renderCart(); }));
+
+        const { sub, discVal, taxVal, total } = calcTotals();
+        $("#subTotal").textContent = money(sub);
+        $("#discTotal").textContent = "-" + money(discVal);
+        $("#taxTotal").textContent = money(taxVal);
+        $("#grandTotal").textContent = money(total);
+        const paid = Number($("#amountPaid").value || 0);
+        $("#changeDue").textContent = money(Math.max(0, paid - total));
+      }
+
+      $("#inpDiscount").oninput = renderCart;
+      $("#inpTax").oninput = renderCart;
+      $("#amountPaid").oninput = renderCart;
+      $("#btnClearCart").onclick = () => {
+        if (!cart.length) return;
+        Swal.fire({ title: "Clear cart?", icon: "question", showCancelButton: true }).then((r) => {
+          if (r.isConfirmed) { cart = []; renderCart(); }
+        });
+      };
+
+      // ===== Save Order =====
+      function generateInvoicePDF(order) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: "pt", format: "a4" });
+        const margin = 40;
+        let y = margin;
+        doc.setFontSize(18);
+        doc.text("Invoice", margin, y);
+        y += 20;
+        doc.setFontSize(11);
+        doc.setTextColor(100);
+        doc.text("Baxsane Store", margin, (y += 20));
+        doc.text("Date: " + fmtDate(order.date), margin, (y += 16));
+        doc.text("Order ID: " + order.id, margin, (y += 16));
+        doc.text("Customer: " + order.customer.name, margin, (y += 16));
+        y += 10;
+        const head = [["Product", "Qty", "Price", "Subtotal"]];
+        const body = order.items.map((i) => [i.name, String(i.qty), money(i.price), money(i.price * i.qty)]);
+        doc.autoTable({ startY: y, head, body, styles: { fontSize: 10 }, headStyles: { fillColor: [79, 70, 229] }, margin: { left: margin, right: margin } });
+        const totalsY = doc.lastAutoTable.finalY + 20;
+        doc.setTextColor(0);
+        doc.setFontSize(12);
+        doc.text("Subtotal: " + money(order.subtotal), margin, totalsY);
+        doc.text("Discount: -" + money(order.discountValue), margin, totalsY + 16);
+        doc.text("Tax: " + money(order.taxValue), margin, totalsY + 32);
+        doc.setFont(undefined, "bold");
+        doc.text("Total: " + money(order.total), margin, totalsY + 48);
+        doc.setFont(undefined, "normal");
+        doc.text("Payment: " + order.payment.method, margin, totalsY + 64);
+        doc.text("Paid: " + money(order.payment.paid) + " | Change: " + money(order.payment.change), margin, totalsY + 80);
+        doc.save(order.id + ".pdf");
+      }
+
+      $("#btnSaveOrder").onclick = () => {
+        if (!cart.length) return Swal.fire({ icon: "warning", title: "Cart is empty" });
+        const custId = $("#selCustomer").value;
+        const customer = customers.find((c) => c.id === custId);
+        if (!customer) return Swal.fire({ icon: "warning", title: "Select a customer" });
+        const { sub, discVal, taxVal, total } = calcTotals();
+        const paid = Number($("#amountPaid").value || 0);
+        const method = $("#paymentMethod").value;
+        if (method === "Cash" && paid < total) return Swal.fire({ icon: "warning", title: "Insufficient cash" });
+        const orderObj = {
+          id: editingOrderId || "O-" + String(Date.now()).slice(-6),
+          customer: { id: customer.id, name: customer.name },
+          items: cart.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })),
+          discountPct: Number($("#inpDiscount").value || 0),
+          taxPct: Number($("#inpTax").value || 0),
+          discountValue: discVal,
+          taxValue: taxVal,
+          subtotal: sub,
+          total,
+          payment: { method, paid, change: Math.max(0, paid - total) },
+          date: new Date().toISOString(),
+        };
+        if (editingOrderId) {
+          const idx = orders.findIndex((o) => o.id === editingOrderId);
+          if (idx >= 0) orders[idx] = orderObj;
+          editingOrderId = null;
+        } else orders.unshift(orderObj);
+        saveOrders();
+        generateInvoicePDF(orderObj);
+        Swal.fire({ icon: "success", title: "Order saved & PDF generated!", timer: 1400, showConfirmButton: false });
+        cart = [];
+        $("#amountPaid").value = "";
+        renderCart();
+        renderOrders();
+      };
+
+      // ===== Orders List =====
+      const listState = { q: "", page: 1, size: 7 };
+      $("#searchOrders").oninput = (e) => {
+        listState.q = e.target.value.toLowerCase();
+        listState.page = 1;
+        renderOrders();
+      };
+      $("#prev").onclick = () => {
+        if (listState.page > 1) {
+          listState.page--;
+          renderOrders();
+        }
+      };
+      $("#next").onclick = () => {
+        listState.page++;
+        renderOrders();
+      };
+
+      function renderOrders() {
+        let data = [...orders];
+        if (listState.q) {
+          const q = listState.q;
+          data = data.filter((o) => o.id.toLowerCase().includes(q) || o.customer.name.toLowerCase().includes(q));
+        }
+        const total = data.length;
+        const pages = Math.max(1, Math.ceil(total / listState.size));
+        listState.page = Math.min(listState.page, pages);
+        const start = (listState.page - 1) * listState.size;
+        const end = Math.min(start + listState.size, total);
+        const rows = data.slice(start, end);
+        $("#from").textContent = total ? start + 1 : 0;
+        $("#to").textContent = end;
+        $("#total").textContent = total;
+        $("#prev").disabled = listState.page <= 1;
+        $("#next").disabled = listState.page >= pages;
+        const tbody = $("#ordersBody");
+        tbody.innerHTML = "";
+        rows.forEach((o) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="px-4 py-2 font-mono">${o.id}</td>
+            <td class="px-4 py-2">${o.customer.name}</td>
+            <td class="px-4 py-2">${o.items.reduce((s, i) => s + i.qty, 0)} items</td>
+            <td class="px-4 py-2 text-indigo-600 dark:text-indigo-300">${money(o.total)}</td>
+            <td class="px-4 py-2 hidden md:table-cell">${fmtDate(o.date)}</td>
+            <td class="px-4 py-2 text-center">
+              <button class="text-indigo-600 hover:underline text-sm" data-edit="${o.id}">Edit</button>
+              <button class="text-indigo-600 hover:underline text-sm ml-2" data-pdf="${o.id}">PDF</button>
+              <button class="text-rose-600 hover:underline text-sm ml-2" data-del="${o.id}">Delete</button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+        $$("[data-edit]").forEach((b) => (b.onclick = () => {
+          const id = b.dataset.edit;
+          const o = orders.find((x) => x.id === id);
+          if (!o) return;
+          editingOrderId = id;
+          $("#selCustomer").value = o.customer.id;
+          $("#inpDiscount").value = o.discountPct;
+          $("#inpTax").value = o.taxPct;
+          $("#paymentMethod").value = o.payment.method;
+          $("#amountPaid").value = o.payment.paid;
+          cart = o.items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty }));
+          renderCart();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }));
+        $$("[data-pdf]").forEach((b) => (b.onclick = () => {
+          const id = b.dataset.pdf;
+          const o = orders.find((x) => x.id === id);
+          if (o) generateInvoicePDF(o);
+        }));
+        $$("[data-del]").forEach((b) => (b.onclick = () => {
+          const id = b.dataset.del;
+          Swal.fire({ title: "Delete this order?", icon: "warning", showCancelButton: true, confirmButtonColor: "#e11d48" }).then((r) => {
+            if (r.isConfirmed) {
+              orders = orders.filter((x) => x.id !== id);
+              saveOrders();
+              renderOrders();
+              Swal.fire({ icon: "success", title: "Deleted", timer: 1000, showConfirmButton: false });
+            }
+          });
+        }));
+      }
+
+      renderCart();
+      renderOrders();
+    </script>
+  </body>
+</html>

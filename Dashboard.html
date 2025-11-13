@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POS System – Dashboard</title>
+
+    <!-- Tailwind & SweetAlert -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+      @media (max-width: 1024px) {
+        #sidebar.hidden {
+          transform: translateX(-100%);
+        }
+      }
+      .transition-transform {
+        transition: transform 0.3s ease;
+      }
+    </style>
+  </head>
+
+  <body
+    class="h-full bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300"
+  >
+    <div class="min-h-screen flex">
+      <!-- Sidebar -->
+      <aside
+        id="sidebar"
+        class="transition-transform fixed lg:static inset-y-0 left-0 w-64 z-30 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 flex flex-col space-y-4"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div
+              class="h-9 w-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500"
+            ></div>
+            <div>
+              <h1
+                class="font-semibold text-lg leading-tight text-slate-800 dark:text-white"
+              >
+                POS System
+              </h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Dashboard
+              </p>
+            </div>
+          </div>
+          <button
+            id="closeSidebar"
+            class="lg:hidden px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300"
+          >
+            ✕
+          </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto space-y-1">
+          <a
+            href="dashboard.html"
+            class="block px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-200 font-medium"
+            >🏠 Dashboard</a
+          >
+          <a
+            href="customers.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >👥 Customers</a
+          >
+          <a
+            href="category.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🏷️ Category</a
+          >
+          <a
+            href="suppliers.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🚚 Suppliers</a
+          >
+          <a
+            href="products.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >📦 Products</a
+          >
+          <a
+            href="orders.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🧾 Orders</a
+          >
+          <a
+            href="reports.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >📈 Reports</a
+          >
+          <a
+            href="users.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🛂 Users</a
+          >
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col min-h-screen">
+        <!-- Navbar -->
+        <header
+          class="sticky top-0 bg-white/80 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-800 backdrop-blur z-20"
+        >
+          <div
+            class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between"
+          >
+            <div class="flex items-center gap-3">
+              <button
+                id="openSidebar"
+                class="lg:hidden px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-lg"
+              >
+                ☰
+              </button>
+              <h2 class="font-semibold text-lg text-slate-800 dark:text-white">
+                Dashboard Overview
+              </h2>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <!-- Store Info -->
+              <div class="text-right hidden sm:block">
+                <div
+                  id="storeName"
+                  class="text-sm font-medium text-indigo-600 dark:text-indigo-300"
+                >
+                  Store: Baxsane Main
+                </div>
+                <div
+                  id="clock"
+                  class="text-xs text-slate-500 dark:text-slate-400"
+                >
+                  --:--
+                </div>
+              </div>
+
+              <!-- Theme Toggle -->
+              <button
+                id="themeToggle"
+                class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                title="Toggle Dark/Light Mode"
+              >
+                <span id="themeIcon">🌙</span>
+              </button>
+
+              <!-- Logout -->
+              <button
+                id="logoutBtn"
+                class="px-3 py-2 rounded-xl border border-rose-300 dark:border-rose-700 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition font-medium"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+          <!-- KPIs -->
+          <div
+            id="kpiGrid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-6"
+          ></div>
+
+          <!-- Dashboard Content -->
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+            <!-- Orders -->
+            <div
+              class="xl:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden"
+            >
+              <div
+                class="p-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800"
+              >
+                <h3 class="font-semibold text-slate-800 dark:text-white">
+                  Recent Orders
+                </h3>
+                <input
+                  id="searchOrders"
+                  type="text"
+                  placeholder="Search orders..."
+                  class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 px-3 py-1.5 text-sm"
+                />
+              </div>
+              <div class="overflow-x-auto">
+                <table class="min-w-full text-sm text-left">
+                  <thead
+                    class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700"
+                  >
+                    <tr>
+                      <th class="px-4 py-2">Order ID</th>
+                      <th class="px-4 py-2">Customer</th>
+                      <th class="px-4 py-2">Status</th>
+                      <th class="px-4 py-2">Total</th>
+                      <th class="px-4 py-2">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    id="orderTable"
+                    class="divide-y divide-slate-200 dark:divide-slate-700"
+                  ></tbody>
+                </table>
+              </div>
+
+              <!-- Pagination -->
+              <div
+                class="flex justify-between items-center px-4 py-3 border-t border-slate-200 dark:border-slate-800 text-sm"
+              >
+                <span id="paginationInfo"></span>
+                <div class="flex gap-2">
+                  <button
+                    id="prevPage"
+                    class="px-3 py-1 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    ◀ Prev
+                  </button>
+                  <button
+                    id="nextPage"
+                    class="px-3 py-1 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    Next ▶
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Low Stock -->
+            <div
+              class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-4"
+            >
+              <h3 class="font-semibold mb-3 text-slate-800 dark:text-white">
+                Low Stock Alerts
+              </h3>
+              <div id="lowStockList" class="space-y-3 text-sm"></div>
+            </div>
+          </div>
+        </main>
+
+        <footer
+          class="text-xs text-slate-500 dark:text-slate-400 text-center py-4"
+        >
+          POS Dashboard • Multi-Store Ready
+        </footer>
+      </div>
+    </div>
+
+    <script>
+      const $ = (s, c = document) => c.querySelector(s);
+
+      // Theme
+      function applyTheme() {
+        const dark = localStorage.getItem("pos_theme") === "dark";
+        document.documentElement.classList.toggle("dark", dark);
+        $("#themeIcon").textContent = dark ? "☀️" : "🌙";
+      }
+      applyTheme();
+
+      $("#themeToggle").onclick = () => {
+        const t =
+          localStorage.getItem("pos_theme") === "dark" ? "light" : "dark";
+        localStorage.setItem("pos_theme", t);
+        applyTheme();
+      };
+
+      // Sidebar toggle
+      $("#openSidebar").onclick = () =>
+        $("#sidebar").classList.remove("hidden");
+      $("#closeSidebar").onclick = () => $("#sidebar").classList.add("hidden");
+
+      // Logout
+      $("#logoutBtn").onclick = () => {
+        Swal.fire({
+          title: "Logout?",
+          text: "Are you sure you want to log out?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#e11d48",
+          cancelButtonColor: "#64748b",
+          confirmButtonText: "Yes, Logout",
+        }).then((res) => {
+          if (res.isConfirmed) {
+            window.location.href = "index.html";
+          }
+        });
+      };
+
+      // Clock
+      setInterval(
+        () => ($("#clock").textContent = new Date().toLocaleTimeString()),
+        1000
+      );
+
+      // Demo Data
+      const storeName = localStorage.getItem("active_store") || "Baxsane Main";
+      $("#storeName").textContent = "Store: " + storeName;
+
+      const orders = Array.from({ length: 25 }).map((_, i) => ({
+        id: "O-" + (101 + i),
+        customer: ["Ali", "Hodan", "Khadar", "Samiya", "Omar"][
+          Math.floor(Math.random() * 5)
+        ],
+        total: (Math.random() * 200).toFixed(2),
+        status: Math.random() > 0.6 ? "Pending" : "Paid",
+        date: "2025-11-" + (8 + Math.floor(Math.random() * 3)),
+      }));
+
+      const products = [
+        { id: "P-001", name: "Laptop", quantity: 3 },
+        { id: "P-002", name: "USB Cable", quantity: 8 },
+        { id: "P-003", name: "Headphones", quantity: 1 },
+      ];
+
+      // KPIs
+      const totalRevenue = orders.reduce((sum, o) => sum + +o.total, 0);
+      const kpis = [
+        { label: "Total Orders", value: orders.length },
+        { label: "Revenue", value: "$" + totalRevenue.toFixed(2) },
+        {
+          label: "Low Stock",
+          value: products.filter((p) => p.quantity < 10).length,
+        },
+        { label: "Customers", value: 22 },
+        { label: "Products", value: products.length },
+        { label: "Suppliers", value: 5 },
+      ];
+      const kpiGrid = $("#kpiGrid");
+      kpis.forEach((k) => {
+        const div = document.createElement("div");
+        div.className =
+          "rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm";
+        div.innerHTML = `<div class='text-xs text-slate-500 dark:text-slate-400'>${k.label}</div><div class='text-2xl font-semibold text-slate-800 dark:text-white mt-1'>${k.value}</div>`;
+        kpiGrid.appendChild(div);
+      });
+
+      // === Orders Table with Search + Pagination ===
+      const orderTable = $("#orderTable");
+      const searchInput = $("#searchOrders");
+      const paginationInfo = $("#paginationInfo");
+      const prevPage = $("#prevPage");
+      const nextPage = $("#nextPage");
+
+      let currentPage = 1;
+      const rowsPerPage = 5;
+      let filteredOrders = [...orders];
+
+      function renderOrders() {
+        orderTable.innerHTML = "";
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginated = filteredOrders.slice(start, end);
+
+        paginated.forEach((o) => {
+          const color = o.status === "Paid" ? "text-emerald-500" : "text-amber-500";
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="px-4 py-2 font-mono">${o.id}</td>
+            <td class="px-4 py-2">${o.customer}</td>
+            <td class="px-4 py-2 ${color} font-medium">${o.status}</td>
+            <td class="px-4 py-2 font-semibold">$${o.total}</td>
+            <td class="px-4 py-2">${o.date}</td>
+          `;
+          orderTable.appendChild(tr);
+        });
+
+        paginationInfo.textContent = filteredOrders.length
+          ? `Showing ${start + 1}-${Math.min(end, filteredOrders.length)} of ${filteredOrders.length}`
+          : "No results";
+
+        prevPage.disabled = currentPage === 1;
+        nextPage.disabled = end >= filteredOrders.length;
+      }
+
+      searchInput.addEventListener("input", () => {
+        const query = searchInput.value.toLowerCase();
+        filteredOrders = orders.filter(
+          (o) =>
+            o.id.toLowerCase().includes(query) ||
+            o.customer.toLowerCase().includes(query) ||
+            o.status.toLowerCase().includes(query)
+        );
+        currentPage = 1;
+        renderOrders();
+      });
+
+      prevPage.addEventListener("click", () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderOrders();
+        }
+      });
+
+      nextPage.addEventListener("click", () => {
+        if (currentPage * rowsPerPage < filteredOrders.length) {
+          currentPage++;
+          renderOrders();
+        }
+      });
+
+      renderOrders();
+
+      // Low Stock
+      const lowStockList = $("#lowStockList");
+      products
+        .filter((p) => p.quantity < 10)
+        .forEach((p) => {
+          const item = document.createElement("div");
+          const level = Math.min(100, p.quantity * 10);
+          item.innerHTML = `
+          <div class="flex justify-between mb-1">
+            <span>${p.name}</span>
+            <span class="font-semibold">${p.quantity}</span>
+          </div>
+          <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2">
+            <div class="h-2 rounded-full ${
+              p.quantity < 3 ? "bg-rose-500" : "bg-amber-400"
+            }" style="width:${level}%;"></div>
+          </div>`;
+          lowStockList.appendChild(item);
+        });
+    </script>
+  </body>
+</html>

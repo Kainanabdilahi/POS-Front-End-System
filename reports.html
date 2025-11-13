@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POS System – Reports</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" };
+    </script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- jsPDF + AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+      input::placeholder,
+      textarea::placeholder {
+        color: rgb(148 163 184);
+      }
+      .dark input::placeholder,
+      .dark textarea::placeholder {
+        color: rgb(226 232 240);
+      }
+    </style>
+  </head>
+
+  <body class="h-full bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100">
+    <div class="min-h-screen flex">
+      <!-- Sidebar -->
+      <aside id="sidebar"
+        class="fixed lg:static inset-y-0 left-0 w-64 z-30 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 p-4 flex flex-col space-y-4 transition-transform">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="h-9 w-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500"></div>
+            <div>
+              <h1 class="font-semibold text-lg leading-tight">POS System</h1>
+              <p class="text-xs text-slate-500">Reports</p>
+            </div>
+          </div>
+          <button id="closeSidebar" class="lg:hidden px-2 py-1 rounded-lg border">✕</button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto space-y-1">
+          <a href="dashboard.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🏠 Dashboard</a>
+          <a href="customers.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">👥 Customers</a>
+          <a href="category.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🏷️ Category</a>
+          <a href="suppliers.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🚚 Suppliers</a>
+          <a href="products.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">📦 Products</a>
+          <a href="orders.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🧾 Orders</a>
+          <a href="reports.html" class="block px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-200">📈 Reports</a>
+          <a href="users.html" class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🛂 Users</a>
+        </nav>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex-1 flex flex-col min-h-screen">
+        <!-- Navbar -->
+        <header class="sticky top-0 bg-white/80 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700 backdrop-blur z-20">
+          <div class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <button id="openSidebar" class="lg:hidden px-3 py-2 border rounded-lg">☰</button>
+              <h2 class="font-semibold text-lg">Reports</h2>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div id="clock" class="text-xs text-slate-500 dark:text-slate-300"></div>
+
+              <button id="themeToggle"
+                class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                title="Toggle Dark/Light Mode">
+                <span id="themeIcon">🌙</span>
+              </button>
+
+              <a href="index.html"
+                class="px-3 py-2 rounded-xl border border-rose-300 dark:border-rose-700 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition font-medium">
+                Logout
+              </a>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6">
+          <!-- Filters -->
+          <section class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 sm:p-5">
+            <h3 class="font-semibold mb-4 text-slate-800 dark:text-white">Filters</h3>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+              <div>
+                <label class="block text-sm mb-1">Start Date</label>
+                <input id="startDate" type="date"
+                  class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-800 dark:text-white" />
+              </div>
+              <div>
+                <label class="block text-sm mb-1">End Date</label>
+                <input id="endDate" type="date"
+                  class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-800 dark:text-white" />
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm mb-1">Customer (optional)</label>
+                <select id="filterCustomer"
+                  class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-800 dark:text-white"></select>
+              </div>
+              <div class="flex items-end gap-2">
+                <button id="applyFilters" class="flex-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">Apply</button>
+                <button id="resetFilters" class="rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2">Reset</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- KPIs -->
+          <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
+              <div class="text-xs text-slate-500">Total Orders</div>
+              <div id="kpiOrders" class="text-2xl font-semibold mt-1">0</div>
+            </div>
+            <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
+              <div class="text-xs text-slate-500">Revenue</div>
+              <div id="kpiRevenue" class="text-2xl font-semibold mt-1">$0.00</div>
+            </div>
+            <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
+              <div class="text-xs text-slate-500">Avg Order</div>
+              <div id="kpiAOV" class="text-2xl font-semibold mt-1">$0.00</div>
+            </div>
+            <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
+              <div class="text-xs text-slate-500">Items Sold</div>
+              <div id="kpiItems" class="text-2xl font-semibold mt-1">0</div>
+            </div>
+          </section>
+
+          <!-- Chart + Export -->
+          <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 lg:col-span-2">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="font-semibold text-slate-800 dark:text-white">Sales by Day</h3>
+                <div class="text-xs text-slate-500" id="rangeLabel">—</div>
+              </div>
+              <canvas id="salesChart" height="120"></canvas>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 space-y-2">
+              <h3 class="font-semibold text-slate-800 dark:text-white">Export</h3>
+              <button id="btnPDF" class="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">Export PDF</button>
+              <button id="btnCSV" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2">Export CSV</button>
+            </div>
+          </section>
+
+          <!-- Orders Table -->
+          <section class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-semibold text-slate-800 dark:text-white">Orders</h3>
+              <input id="searchOrders" placeholder="Search by ID or customer..."
+                class="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 bg-white dark:bg-slate-900 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-200" />
+            </div>
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                  <tr>
+                    <th class="px-4 py-2 text-left">Order ID</th>
+                    <th class="px-4 py-2 text-left">Customer</th>
+                    <th class="px-4 py-2 text-left">Items</th>
+                    <th class="px-4 py-2 text-left">Total</th>
+                    <th class="px-4 py-2 text-left hidden md:table-cell">Date</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersBody" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
+              </table>
+            </div>
+            <div class="flex items-center justify-between text-sm mt-3">
+              <div>Showing <span id="from">0</span>–<span id="to">0</span> of <span id="total">0</span></div>
+              <div class="flex items-center gap-2">
+                <button id="prev" class="rounded-lg border px-3 py-1.5 disabled:opacity-40">Prev</button>
+                <button id="next" class="rounded-lg border px-3 py-1.5 disabled:opacity-40">Next</button>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <footer class="text-xs text-slate-500 text-center py-4">
+          Step 8 of 8 – Reports
+        </footer>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      const $ = (s, c = document) => c.querySelector(s);
+      const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+      const money = (n) => "$" + Number(n || 0).toFixed(2);
+      const fmtDate = (d) => new Date(d).toLocaleDateString();
+      const fmtDateTime = (d) => new Date(d).toLocaleString();
+
+      function applyTheme() {
+        const dark = localStorage.getItem("pos_theme") === "dark";
+        document.documentElement.classList.toggle("dark", dark);
+        $("#themeIcon").textContent = dark ? "☀️" : "🌙";
+      }
+      applyTheme();
+      $("#themeToggle").onclick = () => {
+        const t = localStorage.getItem("pos_theme") === "dark" ? "light" : "dark";
+        localStorage.setItem("pos_theme", t);
+        applyTheme();
+        updateChartTheme();
+      };
+
+      $("#openSidebar").onclick = () => $("#sidebar").classList.remove("hidden");
+      $("#closeSidebar").onclick = () => $("#sidebar").classList.add("hidden");
+      setInterval(() => ($("#clock").textContent = new Date().toLocaleTimeString()), 1000);
+
+      const KEY_ORDERS = "pos_orders_v1";
+      const KEY_CUSTOMERS = "pos_customers_v1";
+      let ORDERS = JSON.parse(localStorage.getItem(KEY_ORDERS) || "[]");
+      const CUSTOMERS = JSON.parse(localStorage.getItem(KEY_CUSTOMERS) || "[]");
+
+      const today = new Date();
+      const startDefault = new Date(today.getTime() - 29 * 24 * 3600 * 1000);
+      $("#startDate").value = startDefault.toISOString().slice(0, 10);
+      $("#endDate").value = today.toISOString().slice(0, 10);
+
+      const fc = $("#filterCustomer");
+      fc.innerHTML = `<option value="all">All customers</option>` + CUSTOMERS.map((c) => `<option value="${c.id}">${c.name}</option>`).join("");
+
+      $("#applyFilters").onclick = () => { state.page = 1; refresh(); };
+      $("#resetFilters").onclick = () => {
+        $("#startDate").value = startDefault.toISOString().slice(0, 10);
+        $("#endDate").value = today.toISOString().slice(0, 10);
+        $("#filterCustomer").value = "all";
+        $("#searchOrders").value = "";
+        state.q = "";
+        state.page = 1;
+        refresh();
+      };
+
+      const state = { q: "", page: 1, size: 10, filtered: [] };
+      $("#searchOrders").oninput = (e) => {
+        state.q = e.target.value.toLowerCase();
+        state.page = 1;
+        renderTable();
+      };
+      $("#prev").onclick = () => { if (state.page > 1) { state.page--; renderTable(); } };
+      $("#next").onclick = () => { state.page++; renderTable(); };
+
+      function inRange(dateStr, from, to) {
+        const t = new Date(dateStr).setHours(0, 0, 0, 0);
+        return t >= from && t <= to;
+      }
+      function applyFilterData() {
+        const sd = new Date($("#startDate").value + "T00:00:00");
+        const ed = new Date($("#endDate").value + "T23:59:59");
+        const from = sd.getTime(), to = ed.getTime();
+        const custId = $("#filterCustomer").value;
+
+        let data = [...ORDERS];
+        data = data.filter((o) => inRange(o.date, from, to));
+        if (custId !== "all") data = data.filter((o) => o.customer?.id === custId);
+        state.filtered = data;
+        $("#rangeLabel").textContent = `${fmtDate(sd)} → ${fmtDate(ed)}`;
+      }
+
+      function renderKPIs() {
+        const orders = state.filtered;
+        const revenue = orders.reduce((s, o) => s + Number(o.total || 0), 0);
+        const items = orders.reduce((s, o) => s + (o.items || []).reduce((t, i) => t + i.qty, 0), 0);
+        $("#kpiOrders").textContent = orders.length;
+        $("#kpiRevenue").textContent = money(revenue);
+        $("#kpiAOV").textContent = money(orders.length ? revenue / orders.length : 0);
+        $("#kpiItems").textContent = items;
+      }
+
+      let chartRef = null;
+      function buildChart() {
+        const orders = state.filtered;
+        const m = new Map();
+        orders.forEach((o) => {
+          const key = o.date.slice(0, 10);
+          m.set(key, (m.get(key) || 0) + Number(o.total || 0));
+        });
+        const labels = Array.from(m.keys()).sort();
+        const data = labels.map((k) => m.get(k));
+        const ctx = $("#salesChart").getContext("2d");
+        if (chartRef) chartRef.destroy();
+        const isDark = document.documentElement.classList.contains("dark");
+        chartRef = new Chart(ctx, {
+          type: "line",
+          data: { labels, datasets: [{ label: "Revenue", data, tension: 0.3 }] },
+          options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: isDark ? "#e2e8f0" : "#334155" } } },
+            scales: {
+              x: { ticks: { color: isDark ? "#cbd5e1" : "#475569" }, grid: { color: isDark ? "#1f2937" : "#e2e8f0" } },
+              y: { ticks: { color: isDark ? "#cbd5e1" : "#475569" }, grid: { color: isDark ? "#1f2937" : "#e2e8f0" } },
+            },
+          },
+        });
+      }
+      function updateChartTheme() { if (chartRef) buildChart(); }
+
+      function renderTable() {
+        let rows = [...state.filtered];
+        if (state.q) {
+          const q = state.q;
+          rows = rows.filter(
+            (o) => (o.id || "").toLowerCase().includes(q) || (o.customer?.name || "").toLowerCase().includes(q)
+          );
+        }
+        const total = rows.length;
+        const pages = Math.max(1, Math.ceil(total / state.size));
+        state.page = Math.min(state.page, pages);
+        const start = (state.page - 1) * state.size;
+        const end = Math.min(start + state.size, total);
+        const slice = rows.slice(start, end);
+
+        $("#from").textContent = total ? start + 1 : 0;
+        $("#to").textContent = end;
+        $("#total").textContent = total;
+        $("#prev").disabled = state.page <= 1;
+        $("#next").disabled = state.page >= pages;
+
+        const tbody = $("#ordersBody");
+        tbody.innerHTML = "";
+        slice.forEach((o) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+          <td class="px-4 py-2 font-mono">${o.id}</td>
+          <td class="px-4 py-2">${o.customer?.name || "—"}</td>
+          <td class="px-4 py-2">${(o.items || []).reduce((s, i) => s + i.qty, 0)} items</td>
+          <td class="px-4 py-2 text-indigo-600 dark:text-indigo-300">${money(o.total)}</td>
+          <td class="px-4 py-2 hidden md:table-cell">${fmtDateTime(o.date)}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function exportCSV() {
+        const rows = state.filtered;
+        const header = ["Order ID", "Customer", "Items", "Total", "Date"];
+        const lines = [header.join(",")];
+        rows.forEach((o) => {
+          const items = (o.items || []).reduce((s, i) => s + i.qty, 0);
+          lines.push([o.id, o.customer?.name || "", items, Number(o.total || 0).toFixed(2), fmtDateTime(o.date)]
+            .map((v) => `"${String(v).replaceAll('"', '""')}"`).join(","));
+        });
+        const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "pos_report.csv"; a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: "pt", format: "a4" });
+        const margin = 40;
+        let y = margin;
+        doc.setFontSize(18); doc.text("Sales Report", margin, y);
+        doc.setFontSize(11);
+        const s = $("#startDate").value, e = $("#endDate").value;
+        doc.text(`Range: ${s} → ${e}`, margin, (y += 18));
+        const orders = state.filtered;
+        const revenue = orders.reduce((t, o) => t + Number(o.total || 0), 0);
+        const items = orders.reduce((t, o) => t + (o.items || []).reduce((a, i) => a + i.qty, 0), 0);
+        doc.text(`Total Orders: ${orders.length}`, margin, (y += 16));
+        doc.text(`Revenue: ${money(revenue)}`, margin, (y += 16));
+        doc.text(`Avg Order: ${money(orders.length ? revenue / orders.length : 0)}`, margin, (y += 16));
+        doc.text(`Items Sold: ${items}`, margin, (y += 16));
+        y += 10;
+        const head = [["Order ID", "Customer", "Items", "Total", "Date"]];
+        const body = orders.map((o) => [
+          o.id,
+          o.customer?.name || "",
+          (o.items || []).reduce((s, i) => s + i.qty, 0),
+          money(o.total),
+          new Date(o.date).toLocaleString(),
+        ]);
+        doc.autoTable({
+          startY: y,
+          head,
+          body,
+          styles: { fontSize: 10 },
+          headStyles: { fillColor: [79, 70, 229] },
+          margin: { left: margin, right: margin },
+        });
+        doc.save("pos_report.pdf");
+      }
+
+      $("#btnCSV").onclick = exportCSV;
+      $("#btnPDF").onclick = exportPDF;
+
+      function refresh() {
+        applyFilterData();
+        renderKPIs();
+        buildChart();
+        renderTable();
+      }
+
+      refresh();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POS System – Users & Stores</title>
+
+    <!-- Tailwind + SweetAlert -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+      input::placeholder {
+        color: rgb(148 163 184);
+      } /* slate-400 */
+      .dark input::placeholder {
+        color: rgb(203 213 225);
+      } /* slate-300 */
+      .img-thumb {
+        width: 42px;
+        height: 42px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+      }
+    </style>
+  </head>
+
+  <body
+    class="h-full bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100"
+  >
+    <div class="min-h-screen flex">
+      <!-- Sidebar -->
+      <aside
+        id="sidebar"
+        class="fixed lg:static inset-y-0 left-0 w-64 z-30 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 flex flex-col space-y-4"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div
+              class="h-9 w-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500"
+            ></div>
+            <div>
+              <h1
+                class="font-semibold text-lg leading-tight text-slate-800 dark:text-slate-100"
+              >
+                POS System
+              </h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Users & Stores
+              </p>
+            </div>
+          </div>
+          <button
+            id="closeSidebar"
+            class="lg:hidden px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300"
+          >
+            ✕
+          </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto space-y-1">
+          <a
+            href="dashboard.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🏠 Dashboard</a
+          >
+          <a
+            href="customers.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >👥 Customers</a
+          >
+          <a
+            href="category.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🏷️ Category</a
+          >
+          <a
+            href="suppliers.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🚚 Suppliers</a
+          >
+          <a
+            href="products.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >📦 Products</a
+          >
+          <a
+            href="orders.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🧾 Orders</a
+          >
+          <a
+            href="reports.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >📈 Reports</a
+          >
+          <a
+            href="users.html"
+            class="block px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-200"
+            >🛂 Users</a
+          >
+        </nav>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex-1 flex flex-col min-h-screen">
+        <!-- Navbar -->
+        <header
+          class="sticky top-0 bg-white/80 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-800 backdrop-blur z-20"
+        >
+          <div
+            class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between"
+          >
+            <div class="flex items-center gap-3">
+              <button
+                id="openSidebar"
+                class="lg:hidden px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-lg"
+              >
+                ☰
+              </button>
+              <h2
+                class="font-semibold text-lg text-slate-800 dark:text-slate-100"
+              >
+                Users & Stores
+              </h2>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div
+                id="clock"
+                class="text-xs text-slate-500 dark:text-slate-400"
+              ></div>
+
+              <!-- Theme Toggle moved to navbar -->
+              <button
+                id="themeToggle"
+                class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                title="Toggle Dark/Light Mode"
+              >
+                <span id="themeIcon">🌙</span>
+              </button>
+
+              <!-- Logout moved to navbar -->
+              <a
+                href="index.html"
+                class="px-3 py-2 rounded-xl border border-rose-300 dark:border-rose-700 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition font-medium"
+              >
+                Logout
+              </a>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6">
+          <!-- Add User -->
+          <section
+            class="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-5"
+          >
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-semibold text-slate-800 dark:text-white">
+                Add / Edit User
+              </h3>
+              <button
+                id="addUserBtn"
+                class="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm"
+              >
+                + New User
+              </button>
+            </div>
+
+            <input
+              id="searchUser"
+              placeholder="Search username or store..."
+              class="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-300 mb-4 w-full"
+            />
+
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead
+                  class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700"
+                >
+                  <tr>
+                    <th class="px-4 py-2 text-left">Image</th>
+                    <th class="px-4 py-2 text-left">Username</th>
+                    <th class="px-4 py-2 text-left">Role</th>
+                    <th class="px-4 py-2 text-left">Store</th>
+                    <th class="px-4 py-2 text-left hidden md:table-cell">
+                      Contact
+                    </th>
+                    <th class="px-4 py-2 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="userBody"
+                  class="divide-y divide-slate-200 dark:divide-slate-700"
+                ></tbody>
+              </table>
+            </div>
+          </section>
+        </main>
+
+        <footer
+          class="text-xs text-slate-500 dark:text-slate-400 text-center py-4"
+        >
+          Multi-Store POS • Users Management
+        </footer>
+      </div>
+    </div>
+
+    <!-- User Modal -->
+    <dialog
+      id="userModal"
+      class="backdrop:bg-black/50 rounded-3xl p-0 w-full max-w-2xl"
+    >
+      <form
+        id="userForm"
+        method="dialog"
+        class="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden"
+      >
+        <div
+          class="px-5 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between"
+        >
+          <h3
+            id="modalTitle"
+            class="font-semibold text-slate-800 dark:text-white"
+          >
+            Add User
+          </h3>
+          <button
+            type="button"
+            id="closeModal"
+            class="rounded-lg px-2 py-1 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="hidden" id="userId" />
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Username</label
+            >
+            <input
+              id="username"
+              required
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-800 dark:text-slate-100"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Password</label
+            >
+            <input
+              id="password"
+              type="password"
+              required
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-800 dark:text-slate-100"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Role</label
+            >
+            <select
+              id="role"
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-800 dark:text-slate-100"
+            >
+              <option>Admin</option>
+              <option>Cashier</option>
+            </select>
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Store Name</label
+            >
+            <input
+              id="store"
+              required
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-800 dark:text-slate-100"
+              placeholder="e.g. Baxsane Store #1"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Contact</label
+            >
+            <input
+              id="contact"
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-800 dark:text-slate-100"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Address</label
+            >
+            <input
+              id="address"
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-800 dark:text-slate-100"
+            />
+          </div>
+          <div class="md:col-span-2">
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Image</label
+            >
+            <input
+              id="image"
+              type="file"
+              accept="image/*"
+              class="block w-full text-sm text-slate-500 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-3 file:py-2 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/30 dark:file:text-indigo-300"
+            />
+            <div id="imgPreview" class="mt-2 hidden">
+              <img
+                id="imgTag"
+                class="img-thumb border border-slate-200 dark:border-slate-700"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="px-5 py-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2"
+        >
+          <button
+            type="button"
+            id="cancelUser"
+            class="rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <script>
+      const $ = (s, c = document) => c.querySelector(s);
+      const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+
+      // Theme
+      function applyTheme() {
+        const dark = localStorage.getItem("pos_theme") === "dark";
+        document.documentElement.classList.toggle("dark", dark);
+        const icon = $("#themeIcon");
+        if (icon) icon.textContent = dark ? "☀️" : "🌙";
+      }
+      applyTheme();
+      $("#themeToggle").onclick = () => {
+        const t =
+          localStorage.getItem("pos_theme") === "dark" ? "light" : "dark";
+        localStorage.setItem("pos_theme", t);
+        applyTheme();
+      };
+
+      // Sidebar + clock
+      $("#openSidebar").onclick = () =>
+        $("#sidebar").classList.remove("hidden");
+      $("#closeSidebar").onclick = () => $("#sidebar").classList.add("hidden");
+      setInterval(
+        () => ($("#clock").textContent = new Date().toLocaleTimeString()),
+        1000
+      );
+
+      // Storage
+      const KEY_USERS = "pos_users_v1";
+      let users = JSON.parse(localStorage.getItem(KEY_USERS) || "[]");
+      const save = () => localStorage.setItem(KEY_USERS, JSON.stringify(users));
+
+      // Modal
+      const modal = $("#userModal");
+      $("#addUserBtn").onclick = () => openModal();
+      $("#closeModal").onclick = () => modal.close();
+      $("#cancelUser").onclick = () => modal.close();
+      let currentImg = "";
+
+      $("#image").onchange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) {
+          currentImg = "";
+          $("#imgPreview").classList.add("hidden");
+          return;
+        }
+        const r = new FileReader();
+        r.onload = () => {
+          currentImg = r.result;
+          $("#imgTag").src = currentImg;
+          $("#imgPreview").classList.remove("hidden");
+        };
+        r.readAsDataURL(file);
+      };
+
+      function openModal(edit = null) {
+        $("#modalTitle").textContent = edit ? "Edit User" : "Add User";
+        $("#userForm").reset();
+        currentImg = edit?.image || "";
+        $("#userId").value = edit?.id || "";
+        $("#username").value = edit?.username || "";
+        $("#password").value = edit?.password ? atob(edit.password) : "";
+        $("#contact").value = edit?.contact || "";
+        $("#address").value = edit?.address || "";
+        $("#store").value = edit?.store || "";
+        $("#role").value = edit?.role || "Cashier";
+        if (currentImg) {
+          $("#imgTag").src = currentImg;
+          $("#imgPreview").classList.remove("hidden");
+        } else {
+          $("#imgPreview").classList.add("hidden");
+        }
+        modal.showModal();
+      }
+
+      $("#userForm").onsubmit = (e) => {
+        e.preventDefault();
+        const id = $("#userId").value || "U-" + String(Date.now()).slice(-5);
+        const obj = {
+          id,
+          username: $("#username").value.trim(),
+          password: btoa($("#password").value.trim()),
+          role: $("#role").value,
+          store: $("#store").value.trim(),
+          contact: $("#contact").value.trim(),
+          address: $("#address").value.trim(),
+          image: currentImg,
+          created: new Date().toISOString(),
+        };
+        if (!obj.username) {
+          Swal.fire({ icon: "warning", title: "Username required" });
+          return;
+        }
+        const i = users.findIndex((u) => u.id === id);
+        if (i >= 0) users[i] = obj;
+        else users.unshift(obj);
+        save();
+        modal.close();
+        Swal.fire({
+          icon: "success",
+          title: "Saved!",
+          timer: 1200,
+          showConfirmButton: false,
+        });
+        render();
+      };
+
+      function editUser(id) {
+        const u = users.find((x) => x.id === id);
+        openModal(u);
+      }
+
+      function delUser(id) {
+        Swal.fire({
+          title: "Delete user?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#e11d48",
+        }).then((r) => {
+          if (r.isConfirmed) {
+            users = users.filter((u) => u.id !== id);
+            save();
+            render();
+            Swal.fire({
+              icon: "success",
+              title: "Deleted",
+              timer: 1000,
+              showConfirmButton: false,
+            });
+          }
+        });
+      }
+
+      window.editUser = editUser;
+      window.delUser = delUser;
+
+      $("#searchUser").oninput = () => render();
+
+      function render() {
+        const q = $("#searchUser").value.toLowerCase();
+        const tbody = $("#userBody");
+        tbody.innerHTML = "";
+        users
+          .filter(
+            (u) =>
+              u.username.toLowerCase().includes(q) ||
+              u.store.toLowerCase().includes(q)
+          )
+          .forEach((u) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td class="px-4 py-2">${
+              u.image
+                ? `<img src="${u.image}" class="img-thumb border border-slate-200 dark:border-slate-700">`
+                : "—"
+            }</td>
+            <td class="px-4 py-2 font-medium text-slate-800 dark:text-slate-100">${
+              u.username
+            }</td>
+            <td class="px-4 py-2 text-slate-700 dark:text-slate-200">${
+              u.role
+            }</td>
+            <td class="px-4 py-2 text-slate-700 dark:text-slate-200">${
+              u.store
+            }</td>
+            <td class="px-4 py-2 hidden md:table-cell text-slate-600 dark:text-slate-300">${
+              u.contact || "—"
+            }</td>
+            <td class="px-4 py-2 text-center">
+              <button class="text-indigo-600 dark:text-indigo-400 hover:underline text-sm" onclick="editUser('${
+                u.id
+              }')">Edit</button>
+              <button class="text-rose-600 dark:text-rose-400 hover:underline text-sm ml-2" onclick="delUser('${
+                u.id
+              }')">Delete</button>
+            </td>`;
+            tbody.appendChild(tr);
+          });
+      }
+
+      render();
+    </script>
+  </body>
+</html>

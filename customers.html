@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POS System – Customers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+
+  <body
+    class="h-full bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100"
+  >
+    <div class="min-h-screen flex">
+      <!-- Sidebar -->
+      <aside
+        id="sidebar"
+        class="fixed lg:static inset-y-0 left-0 w-64 z-30 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 p-4 flex flex-col space-y-4 transition-transform"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div
+              class="h-9 w-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500"
+            ></div>
+            <div>
+              <h1
+                class="font-semibold text-lg leading-tight text-slate-800 dark:text-white"
+              >
+                POS System
+              </h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Customers
+              </p>
+            </div>
+          </div>
+          <button
+            id="closeSidebar"
+            class="lg:hidden px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200"
+          >
+            ✕
+          </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto space-y-1">
+          <a
+            href="dashboard.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🏠 Dashboard</a
+          >
+          <a
+            href="customers.html"
+            class="block px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-200"
+            >👥 Customers</a
+          >
+          <a
+            href="category.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🏷️ Category</a
+          >
+          <a
+            href="suppliers.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🚚 Suppliers</a
+          >
+          <a
+            href="products.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >📦 Products</a
+          >
+          <a
+            href="orders.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🧾 Orders</a
+          >
+          <a
+            href="reports.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >📈 Reports</a
+          >
+          <a
+            href="users.html"
+            class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            >🛂 Users</a
+          >
+        </nav>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex-1 flex flex-col min-h-screen">
+        <!-- Navbar -->
+        <header
+          class="sticky top-0 bg-white/80 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700 backdrop-blur z-20"
+        >
+          <div
+            class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between"
+          >
+            <div class="flex items-center gap-3">
+              <button
+                id="openSidebar"
+                class="lg:hidden px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200"
+              >
+                ☰
+              </button>
+              <h2 class="font-semibold text-lg text-slate-800 dark:text-white">
+                Customers
+              </h2>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div
+                id="clock"
+                class="text-xs text-slate-500 dark:text-slate-400"
+              ></div>
+
+              <!-- Theme Toggle -->
+              <button
+                id="themeToggle"
+                class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                title="Toggle Dark/Light Mode"
+              >
+                <span id="themeIcon">🌙</span>
+              </button>
+
+              <!-- Logout -->
+              <a
+                href="index.html"
+                id="logoutBtn"
+                class="px-3 py-2 rounded-xl border border-rose-300 dark:border-rose-700 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition font-medium"
+              >
+                Logout
+              </a>
+            </div>
+          </div>
+        </header>
+
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-slate-800 dark:text-white">
+              Customer List
+            </h2>
+            <button
+              id="addCustomerBtn"
+              class="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm"
+            >
+              + Add Customer
+            </button>
+          </div>
+
+          <div class="flex flex-wrap gap-2 mb-4">
+            <input
+              id="searchCustomer"
+              type="text"
+              placeholder="Search name or contact..."
+              class="flex-1 min-w-[200px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2 placeholder-slate-400 dark:placeholder-slate-300"
+            />
+          </div>
+
+          <div
+            class="overflow-x-auto rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+          >
+            <table class="min-w-full text-sm">
+              <thead
+                class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700"
+              >
+                <tr>
+                  <th class="px-4 py-2 text-left">ID</th>
+                  <th class="px-4 py-2 text-left">Name</th>
+                  <th class="px-4 py-2 text-left">Contact</th>
+                  <th class="px-4 py-2 text-left">Email</th>
+                  <th class="px-4 py-2 text-left hidden sm:table-cell">
+                    Address
+                  </th>
+                  <th class="px-4 py-2 text-left">Date</th>
+                  <th class="px-4 py-2 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody
+                id="customerBody"
+                class="divide-y divide-slate-200 dark:divide-slate-700"
+              ></tbody>
+            </table>
+
+            <!-- Pagination Controls -->
+            <div
+              class="flex justify-between items-center px-4 py-3 border-t border-slate-200 dark:border-slate-700 text-sm"
+            >
+              <span id="paginationInfo"></span>
+              <div class="flex gap-2">
+                <button
+                  id="prevPage"
+                  class="px-3 py-1 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
+                >
+                  ◀ Prev
+                </button>
+                <button
+                  id="nextPage"
+                  class="px-3 py-1 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
+                >
+                  Next ▶
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <footer
+          class="text-xs text-slate-500 dark:text-slate-400 text-center py-4"
+        >
+          Step 3 of 8 – Customers • Next: Category
+        </footer>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <dialog
+      id="customerModal"
+      class="backdrop:bg-black/50 rounded-3xl p-0 w-full max-w-lg"
+    >
+      <form
+        id="customerForm"
+        method="dialog"
+        class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden"
+      >
+        <div
+          class="px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between"
+        >
+          <h3
+            id="modalTitle"
+            class="font-semibold text-slate-800 dark:text-white"
+          >
+            Add Customer
+          </h3>
+          <button
+            type="button"
+            id="closeModal"
+            class="rounded-lg px-2 py-1 text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input type="hidden" id="custId" />
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Name</label
+            >
+            <input
+              id="custName"
+              required
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Contact</label
+            >
+            <input
+              id="custContact"
+              required
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Email</label
+            >
+            <input
+              id="custEmail"
+              type="email"
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-200"
+              >Address</label
+            >
+            <input
+              id="custAddress"
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2"
+            />
+          </div>
+        </div>
+        <div
+          class="px-5 py-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-end gap-2"
+        >
+          <button
+            type="button"
+            id="cancelCust"
+            class="rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2 text-slate-800 dark:text-slate-100"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+
+      // Theme
+      function applyTheme() {
+        const dark = localStorage.getItem("pos_theme") === "dark";
+        document.documentElement.classList.toggle("dark", dark);
+        $("#themeIcon").textContent = dark ? "☀️" : "🌙";
+      }
+      applyTheme();
+      $("#themeToggle").onclick = () => {
+        const t =
+          localStorage.getItem("pos_theme") === "dark" ? "light" : "dark";
+        localStorage.setItem("pos_theme", t);
+        applyTheme();
+      };
+
+      // Sidebar toggle
+      $("#openSidebar").onclick = () =>
+        $("#sidebar").classList.remove("hidden");
+      $("#closeSidebar").onclick = () => $("#sidebar").classList.add("hidden");
+
+      // Clock
+      setInterval(() => {
+        $("#clock").textContent = new Date().toLocaleTimeString();
+      }, 1000);
+
+      // LocalStorage customers
+      const KEY = "pos_customers_v1";
+      let customers = JSON.parse(localStorage.getItem(KEY) || "[]");
+      const rowsPerPage = 5;
+      let currentPage = 1;
+
+      function save() {
+        localStorage.setItem(KEY, JSON.stringify(customers));
+      }
+
+      // Render with pagination
+      function render() {
+        const tbody = $("#customerBody");
+        tbody.innerHTML = "";
+        const q = $("#searchCustomer").value.toLowerCase();
+        const list = customers.filter(
+          (c) =>
+            c.name.toLowerCase().includes(q) ||
+            c.contact.toLowerCase().includes(q)
+        );
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginated = list.slice(start, end);
+
+        paginated.forEach((c) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+          <td class="px-4 py-2 font-mono">${c.id}</td>
+          <td class="px-4 py-2">${c.name}</td>
+          <td class="px-4 py-2">${c.contact}</td>
+          <td class="px-4 py-2">${c.email || "—"}</td>
+          <td class="px-4 py-2 hidden sm:table-cell">${c.address || "—"}</td>
+          <td class="px-4 py-2">${new Date(c.date).toLocaleDateString()}</td>
+          <td class="px-4 py-2 text-center">
+            <button class="text-indigo-600 hover:underline text-sm" onclick="editCustomer('${c.id}')">Edit</button>
+            <button class="text-rose-600 hover:underline text-sm ml-2" onclick="deleteCustomer('${c.id}')">Delete</button>
+          </td>`;
+          tbody.appendChild(tr);
+        });
+
+        $("#paginationInfo").textContent = list.length
+          ? `Showing ${start + 1}-${Math.min(end, list.length)} of ${list.length}`
+          : "No customers found";
+
+        $("#prevPage").disabled = currentPage === 1;
+        $("#nextPage").disabled = end >= list.length;
+      }
+
+      // Pagination buttons
+      $("#prevPage").onclick = () => {
+        if (currentPage > 1) {
+          currentPage--;
+          render();
+        }
+      };
+      $("#nextPage").onclick = () => {
+        currentPage++;
+        render();
+      };
+
+      $("#searchCustomer").oninput = () => {
+        currentPage = 1;
+        render();
+      };
+
+      // CRUD functions
+      $("#addCustomerBtn").onclick = () => openModal();
+      $("#closeModal").onclick = () => $("#customerModal").close();
+      $("#cancelCust").onclick = () => $("#customerModal").close();
+
+      $("#customerForm").onsubmit = (e) => {
+        e.preventDefault();
+        const id = $("#custId").value || "C-" + String(Date.now()).slice(-5);
+        const obj = {
+          id,
+          name: $("#custName").value.trim(),
+          contact: $("#custContact").value.trim(),
+          email: $("#custEmail").value.trim(),
+          address: $("#custAddress").value.trim(),
+          date: new Date().toISOString(),
+        };
+        const i = customers.findIndex((x) => x.id === id);
+        if (i >= 0) customers[i] = obj;
+        else customers.unshift(obj);
+        save();
+        $("#customerModal").close();
+        Swal.fire({
+          icon: "success",
+          title: "Saved!",
+          timer: 1200,
+          showConfirmButton: false,
+        });
+        render();
+      };
+
+      function openModal(edit = null) {
+        const m = $("#customerModal");
+        const t = $("#modalTitle");
+        if (edit) {
+          t.textContent = "Edit Customer";
+          $("#custId").value = edit.id;
+          $("#custName").value = edit.name;
+          $("#custContact").value = edit.contact;
+          $("#custEmail").value = edit.email;
+          $("#custAddress").value = edit.address;
+        } else {
+          t.textContent = "Add Customer";
+          $("#customerForm").reset();
+          $("#custId").value = "";
+        }
+        m.showModal();
+      }
+
+      function editCustomer(id) {
+        const c = customers.find((x) => x.id === id);
+        openModal(c);
+      }
+
+      function deleteCustomer(id) {
+        Swal.fire({
+          title: "Delete this customer?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#e11d48",
+          confirmButtonText: "Yes, delete",
+        }).then((r) => {
+          if (r.isConfirmed) {
+            customers = customers.filter((x) => x.id !== id);
+            save();
+            render();
+            Swal.fire({
+              icon: "success",
+              title: "Deleted",
+              timer: 1000,
+              showConfirmButton: false,
+            });
+          }
+        });
+      }
+
+      render();
+    </script>
+  </body>
+</html>
